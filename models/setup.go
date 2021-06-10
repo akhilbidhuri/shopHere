@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 
 	"gorm.io/driver/postgres"
@@ -10,7 +11,7 @@ import (
 )
 
 type Storage struct {
-	db *gorm.DB
+	DB *gorm.DB
 }
 
 func (s *Storage) Setup() error {
@@ -20,13 +21,33 @@ func (s *Storage) Setup() error {
 	if err != nil {
 		return errors.New(err.Error())
 	}
-	s.db = db
-	s.db.AutoMigrate(&Cart{}, &User{}, &Item{}, &CartItem{}, &Order{})
-	tx := s.db.Exec(`ALTER TABLE carts
-	ADD FOREIGN KEY (user_id) 
-	REFERENCES users(id)`)
-	if tx.Error != nil {
-		return errors.New(tx.Error.Error())
+	s.DB = db
+	if err = s.DB.Migrator().AutoMigrate(&Cart{}, &User{}, &Item{}, &CartItem{}, &Order{}); err != nil {
+		return err
+	}
+	if err = s.applyForeignKeyConstraints(); err != nil {
+		return err
+	}
+	log.Println("DB migrated and setup done.")
+	return nil
+}
+
+func (s *Storage) applyForeignKeyConstraints() error {
+	tx1 := s.DB.Exec(`ALTER TABLE users
+		ADD FOREIGN KEY (cart_id)
+		REFERENCES carts(id)	
+		DEFERRABLE INITIALLY DEFERRED
+	`)
+	if tx1.Error != nil {
+		return errors.New(tx1.Error.Error())
+	}
+	tx2 := s.DB.Exec(`ALTER TABLE carts
+		ADD FOREIGN KEY (user_id)
+		REFERENCES users(id)	
+		DEFERRABLE INITIALLY DEFERRED
+	`)
+	if tx2.Error != nil {
+		return errors.New(tx2.Error.Error())
 	}
 	return nil
 }
