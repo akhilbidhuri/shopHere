@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/akhilbidhuri/shopHere/models"
-	"github.com/gin-gonic/contrib/static"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	cors "github.com/itsjamie/gin-cors"
 )
@@ -31,7 +31,7 @@ func (a *App) Intitialize() {
 }
 
 func (a *App) initializeRoutes() {
-	a.router.Use(static.Serve("/", static.LocalFile("../build", true)))
+	a.router.Use(static.Serve("/", static.LocalFile("./build", true)))
 	a.router.POST("/user/create", a.addUser)
 	a.router.POST("/user/login", a.login)
 	a.router.GET("/user/list", a.listUser)

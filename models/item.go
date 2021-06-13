@@ -14,7 +14,7 @@ type Item struct {
 }
 
 func (i *Item) Create(db *gorm.DB) error {
-	err := db.Debug().Create(&i).Error
+	err := db.Create(&i).Error
 	if err != nil {
 		return err
 	}
@@ -23,7 +23,7 @@ func (i *Item) Create(db *gorm.DB) error {
 
 func (i *Item) GetAllItems(db *gorm.DB) (*[]Item, error) {
 	items := []Item{}
-	err := db.Debug().Model(&Item{}).Find(&items).Error
+	err := db.Model(&Item{}).Find(&items).Error
 	if err != nil {
 		return &[]Item{}, err
 	}

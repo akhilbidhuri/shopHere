@@ -9,7 +9,7 @@ type CartItem struct {
 }
 
 func (ci *CartItem) Create(db *gorm.DB) error {
-	err := db.Debug().Create(&ci).Error
+	err := db.Create(&ci).Error
 	if err != nil {
 		return err
 	}
@@ -18,7 +18,7 @@ func (ci *CartItem) Create(db *gorm.DB) error {
 
 func (ci *CartItem) GetItemsForCart(db *gorm.DB) (*[]CartItem, error) {
 	cartItems := []CartItem{}
-	err := db.Debug().Model(&CartItem{}).Where("cart_id = ?", ci.Cart_id).Find(&cartItems).Error
+	err := db.Model(&CartItem{}).Where("cart_id = ?", ci.Cart_id).Find(&cartItems).Error
 	if err != nil {
 		return &[]CartItem{}, err
 	}

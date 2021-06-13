@@ -16,7 +16,7 @@ type Cart struct {
 
 func (c *Cart) Create(db *gorm.DB) error {
 	err := db.Transaction(func(tx *gorm.DB) error {
-		err := tx.Debug().Create(&c).Error
+		err := tx.Create(&c).Error
 
 		if err != nil {
 			return err
@@ -30,7 +30,7 @@ func (c *Cart) Create(db *gorm.DB) error {
 }
 
 func (c *Cart) GetCartByID(db *gorm.DB, id int) error {
-	err := db.Debug().Model(Cart{}).Where("id = ?", id).Take(&c).Error
+	err := db.Model(Cart{}).Where("id = ?", id).Take(&c).Error
 	if err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func (c *Cart) GetNewCart(db *gorm.DB) (*User, error) {
 }
 
 func (c *Cart) Update(db *gorm.DB) error {
-	err := db.Debug().Save(&c).Error
+	err := db.Save(&c).Error
 	if err != nil {
 		return nil
 	}
@@ -65,7 +65,7 @@ func (c *Cart) Update(db *gorm.DB) error {
 
 func (c *Cart) GetAllCarts(db *gorm.DB) (*[]Cart, error) {
 	carts := []Cart{}
-	err := db.Debug().Model(&Cart{}).Find(&carts).Error
+	err := db.Model(&Cart{}).Find(&carts).Error
 	if err != nil {
 		return &[]Cart{}, err
 	}

@@ -38,7 +38,7 @@ func (u *User) ConvertPwdToHash() error {
 func (u *User) Create(db *gorm.DB) error {
 	u.ConvertPwdToHash()
 	err := db.Transaction(func(tx *gorm.DB) error {
-		err := tx.Debug().Create(&u).Error
+		err := tx.Create(&u).Error
 		if err != nil {
 			return err
 		}
@@ -64,7 +64,7 @@ func (u *User) Create(db *gorm.DB) error {
 
 func (u *User) GetAllUsers(db *gorm.DB) (*[]User, error) {
 	users := []User{}
-	err := db.Debug().Model(&User{}).Find(&users).Error
+	err := db.Model(&User{}).Find(&users).Error
 	if err != nil {
 		return &[]User{}, err
 	}
@@ -72,7 +72,7 @@ func (u *User) GetAllUsers(db *gorm.DB) (*[]User, error) {
 }
 
 func (u *User) GetUserByUname(db *gorm.DB, userName string) error {
-	err := db.Debug().Model(User{}).Where("username = ?", userName).Take(&u).Error
+	err := db.Model(User{}).Where("username = ?", userName).Take(&u).Error
 	if err != nil {
 		return err
 	}
@@ -80,7 +80,7 @@ func (u *User) GetUserByUname(db *gorm.DB, userName string) error {
 }
 
 func (u *User) GetUserByID(db *gorm.DB, id int) error {
-	err := db.Debug().Model(User{}).Where("id = ?", id).Take(&u).Error
+	err := db.Model(User{}).Where("id = ?", id).Take(&u).Error
 	if err != nil {
 		return err
 	}
@@ -88,7 +88,7 @@ func (u *User) GetUserByID(db *gorm.DB, id int) error {
 }
 
 func (u *User) GetUserByToken(db *gorm.DB, token string) error {
-	err := db.Debug().Model(User{}).Where("token = ?", token).Take(&u).Error
+	err := db.Model(User{}).Where("token = ?", token).Take(&u).Error
 	if err != nil {
 		return err
 	}
@@ -97,7 +97,7 @@ func (u *User) GetUserByToken(db *gorm.DB, token string) error {
 
 func (u *User) Update(db *gorm.DB) error {
 	err := db.Transaction(func(tx *gorm.DB) error {
-		err := tx.Debug().Save(&u).Error
+		err := tx.Save(&u).Error
 		if err != nil {
 			return err
 		}

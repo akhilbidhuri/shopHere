@@ -15,7 +15,7 @@ type Order struct {
 }
 
 func (o *Order) Create(db *gorm.DB) error {
-	err := db.Debug().Create(&o).Error
+	err := db.Create(&o).Error
 	if err != nil {
 		return nil
 	}
@@ -24,7 +24,7 @@ func (o *Order) Create(db *gorm.DB) error {
 
 func (o *Order) GetOrderByUID(db *gorm.DB) (*[]Order, error) {
 	orders := []Order{}
-	err := db.Debug().Model(&Order{}).Where("user_id = ?", o.User_id).Find(&orders).Error
+	err := db.Model(&Order{}).Where("user_id = ?", o.User_id).Find(&orders).Error
 	if err != nil {
 		return &[]Order{}, err
 	}
@@ -33,7 +33,7 @@ func (o *Order) GetOrderByUID(db *gorm.DB) (*[]Order, error) {
 
 func (o *Order) GetAllOrders(db *gorm.DB) (*[]Order, error) {
 	orders := []Order{}
-	err := db.Debug().Model(&Order{}).Find(&orders).Error
+	err := db.Model(&Order{}).Find(&orders).Error
 	if err != nil {
 		return &[]Order{}, err
 	}
