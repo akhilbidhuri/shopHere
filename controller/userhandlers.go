@@ -3,7 +3,6 @@ package controller
 import (
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/akhilbidhuri/shopHere/models"
 	"github.com/gin-gonic/gin"
@@ -11,15 +10,21 @@ import (
 )
 
 func createToken() string {
-	t, _ := time.Now().MarshalText()
 	auxilaryUUID, _ := uuid.New().MarshalText()
-	uuid, _ := uuid.FromBytes(append(t, auxilaryUUID...))
-	return uuid.String()
+	finalUUID, _ := uuid.FromBytes(auxilaryUUID[:16])
+	return finalUUID.String()
 }
 
 func (a *App) addUser(c *gin.Context) {
 	user := models.User{}
 	if err := parseJsonFromReq(c.Request, &user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": INVALID_BODY,
+		})
+		return
+	}
+	alreadyPresent := models.User{}
+	if err := alreadyPresent.GetUserByUname(a.storage.DB, user.Username); err == nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": INVALID_BODY,
 		})
@@ -47,6 +52,7 @@ func (a *App) login(c *gin.Context) {
 		})
 		return
 	}
+	password := user.Password
 	err := user.GetUserByUname(a.storage.DB, user.Username)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -54,7 +60,7 @@ func (a *App) login(c *gin.Context) {
 		})
 		return
 	}
-	if err = models.VerifyPassword(user.Password, user.Password); err != nil {
+	if err = models.VerifyPassword(user.Password, password); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid user details",
 		})

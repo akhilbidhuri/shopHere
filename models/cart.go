@@ -37,22 +37,22 @@ func (c *Cart) GetCartByID(db *gorm.DB, id int) error {
 	return err
 }
 
-func (c *Cart) GetNewCart(db *gorm.DB) error {
+func (c *Cart) GetNewCart(db *gorm.DB) (*User, error) {
 	newCart := Cart{}
 	newCart.User_id = c.User_id
 	newCart.Is_purchased = false
 	if err := newCart.Create(db); err != nil {
-		return err
+		return &User{}, err
 	}
 	user := User{}
 	if err := user.GetUserByID(db, c.User_id); err != nil {
-		return err
+		return &User{}, err
 	}
 	user.Cart_id = newCart.Id
 	if err := user.Update(db); err != nil {
-		return err
+		return &User{}, err
 	}
-	return nil
+	return &user, nil
 }
 
 func (c *Cart) Update(db *gorm.DB) error {

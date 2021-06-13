@@ -18,7 +18,7 @@ func (ci *CartItem) Create(db *gorm.DB) error {
 
 func (ci *CartItem) GetItemsForCart(db *gorm.DB) (*[]CartItem, error) {
 	cartItems := []CartItem{}
-	err := db.Debug().Model(&CartItem{}).Find(&cartItems).Where("cart_id = ?", ci.Cart_id).Error
+	err := db.Debug().Model(&CartItem{}).Where("cart_id = ?", ci.Cart_id).Find(&cartItems).Error
 	if err != nil {
 		return &[]CartItem{}, err
 	}

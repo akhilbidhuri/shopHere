@@ -12,7 +12,7 @@ type User struct {
 	Id        int       `gorm:"primary_key;auto_increment"`
 	Name      string    `json:"name" validate:"required" gorm:"type:varchar(100);not null"`
 	Username  string    `json:"username" validate:"required" gorm:"type:varchar(100);not null;UNIQUE"`
-	Password  string    `json:"-" validate:"required" gorm:"type:varchar(256);not null"`
+	Password  string    `json:"password" validate:"required" gorm:"type:varchar(256);not null"`
 	Token     string    `json:"token" gorm:"type:varchar(256)"`
 	CreatedAt time.Time `json:"create_at" gorm:"default:CURRENT_TIMESTAMP"`
 	Cart_id   int       `json:"cart_id" gorm:"type:integer"` //gorm:"type:integer REFERENCES carts(id);default:null"`
@@ -116,5 +116,6 @@ func (u *User) ToMap() map[string]interface{} {
 		"username":   u.Username,
 		"cart_id":    u.Cart_id,
 		"created_at": u.CreatedAt.String(),
+		"token":      u.Token,
 	}
 }

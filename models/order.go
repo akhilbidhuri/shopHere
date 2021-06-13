@@ -24,7 +24,7 @@ func (o *Order) Create(db *gorm.DB) error {
 
 func (o *Order) GetOrderByUID(db *gorm.DB) (*[]Order, error) {
 	orders := []Order{}
-	err := db.Debug().Model(&CartItem{}).Find(&orders).Where("user_id = ?", o.User_id).Error
+	err := db.Debug().Model(&Order{}).Where("user_id = ?", o.User_id).Find(&orders).Error
 	if err != nil {
 		return &[]Order{}, err
 	}

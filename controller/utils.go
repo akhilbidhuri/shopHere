@@ -24,8 +24,9 @@ func parseJsonFromReq(req *http.Request, model interface{}) error {
 
 func validateToken(req *http.Request, db *gorm.DB) error {
 	token := req.Header.Get("Authorization")
+	prefix := "Bearer "
 	if strings.HasPrefix(token, "Bearer ") {
-		token = strings.TrimPrefix(token, "Bearer ")
+		token = strings.TrimPrefix(token, prefix)
 		user := models.User{}
 		if err := user.GetUserByToken(db, token); err != nil {
 			return err

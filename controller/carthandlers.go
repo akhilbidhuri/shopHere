@@ -11,14 +11,14 @@ import (
 
 func (a *App) addItemToCart(c *gin.Context) {
 	if err := validateToken(c.Request, a.storage.DB); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": INVALID_REQUEST,
+		c.JSON(http.StatusOK, gin.H{
+			"message": INVALID_TOKEN,
 		})
 		return
 	}
 	cartItem := models.CartItem{}
 	if err := parseJsonFromReq(c.Request, &cartItem); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusOK, gin.H{
 			"message": INVALID_BODY,
 		})
 		return
@@ -51,14 +51,14 @@ func (a *App) listCarts(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"message": SUCCESS,
-		"users":   cartsList,
+		"carts":   cartsList,
 	})
 }
 
 func (a *App) listCartItems(c *gin.Context) {
 	if err := validateToken(c.Request, a.storage.DB); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": INVALID_REQUEST,
+		c.JSON(http.StatusOK, gin.H{
+			"message": INVALID_TOKEN,
 		})
 		return
 	}
@@ -88,7 +88,7 @@ func (a *App) listCartItems(c *gin.Context) {
 		cartItemsList = append(cartItemsList, ci.ToMap())
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"message": SUCCESS,
-		"users":   cartItemsList,
+		"message":   SUCCESS,
+		"cartItems": cartItemsList,
 	})
 }
