@@ -15,7 +15,19 @@ password</li>
 <li>/order/list - List all orders</li>
 <p>* uses token</p>
 </ul>
-
 Provides single device support only one active token can exist for a user.
+
+<blockquote>
+    Create products to be shown on store using - <br/>
+    http://localhost:[PORT]/item/create with POST Request and body like -> 
+    {
+        "name": [ITEM_NAME]
+    } <br/>
+    Example(cURL) -  <code>curl --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"name":"xyz"}' \
+  http://localhost:8040/item/create</code>
+  <br/> Or can use some other client like thunder, postman, insomnia etc.
+</blockquote>
 
 Tech Stack - Go, Gin, Gorm, Postgresql
