@@ -14,18 +14,38 @@ type Storage struct {
 	DB *gorm.DB
 }
 
-func (s *Storage) Setup() error {
+func createPgDb() *gorm.DB {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
-		os.Getenv("DB_HOST"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"), os.Getenv("DB_PORT"))
+		os.Getenv("DB_HOST"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), "postgres", os.Getenv("DB_PORT"))
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		return errors.New(err.Error())
+		log.Fatalf("Error:" + err.Error())
 	}
+	db = db.Exec("CREATE DATABASE " + os.Getenv("DB_NAME") + ";")
+	if db.Error != nil {
+		fmt.Println("Unable to create DB, attempting to connect assuming it exists...")
+		dsn = fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+			os.Getenv("DB_HOST"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"), os.Getenv("DB_PORT"))
+		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		if err != nil {
+			log.Fatalf("Could not connect to DB, Error:" + err.Error())
+		}
+	} else {
+		db = db.Exec("\\c " + os.Getenv("DB_NAME") + ";")
+		if db.Error != nil {
+			log.Fatalf("Could not connect to DB, Error:" + err.Error())
+		}
+	}
+	return db
+}
+
+func (s *Storage) Setup() error {
+	db := createPgDb()
 	s.DB = db
-	if err = s.DB.Migrator().AutoMigrate(&Cart{}, &User{}, &Item{}, &CartItem{}, &Order{}); err != nil {
+	if err := s.DB.Migrator().AutoMigrate(&Cart{}, &User{}, &Item{}, &CartItem{}, &Order{}); err != nil {
 		return err
 	}
-	if err = s.applyForeignKeyConstraints(); err != nil {
+	if err := s.applyForeignKeyConstraints(); err != nil {
 		return err
 	}
 	log.Println("DB migrated and setup done.")
